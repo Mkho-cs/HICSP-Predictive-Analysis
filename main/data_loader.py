@@ -1,3 +1,4 @@
+from os import access
 import pandas as pd
 from pandas.core.frame import DataFrame
 import numpy as np
@@ -5,7 +6,7 @@ import requests
 import io
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
-import math
+from math import ceil
 
 class DataLoader:
     def __init__(self, url: str) -> None:
@@ -21,16 +22,25 @@ class DataLoader:
     def describe(self)->DataFrame:
         return self.data.describe(include='all')
     
-    def column_bars(self, subrow, size = (48, 12))-> None:
-        col_count = len(self.data.columns)
-        subcol = math.ceil(col_count/subrow)
-        fig, axs = plt.subplots(subrow, subcol, figsize = size)
+    def get_col_unique_freq(self)->list:
+        arr = []
+        for col in self.data:
+            if self.data[col].dtype.name == 'category':
+                grouped_data = self.data.groupby(by=col).size()
+                arr.append(grouped_data)
+        
+        return arr
+    
+    def create_subplots(self, data: list, subrow: int)->None:
+        subcol = ceil(len(data)/subrow)
+        fig, axes = plt.subplots(subrow, subcol, figsize = (subrow*12, subcol*12))
         current = 0
-        for subaxes in axs:
+        for subaxes in axes:
             for axis in subaxes:
-                self.data.plot.bar(x = self.data.columns[current])
+                data[current].plot(ax = axis, kind='bar')
                 current += 1
-
+                if current == len(data): return
+        plt.tight_layout()
 
     def drop_column(self, cols: list)->DataFrame:
         return self.data.drop(cols, inplace = True, axis = 1)
