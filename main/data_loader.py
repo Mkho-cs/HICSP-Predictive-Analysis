@@ -1,10 +1,7 @@
-from os import access
 import pandas as pd
 from pandas.core.frame import DataFrame
-import numpy as np
 import requests
 import io
-from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 from math import ceil
 
@@ -33,7 +30,7 @@ class DataLoader:
     
     def create_subplots(self, data: list, subrow: int)->None:
         subcol = ceil(len(data)/subrow)
-        fig, axes = plt.subplots(subrow, subcol, figsize = (subrow*12, subcol*12))
+        fig, axes = plt.subplots(subrow, subcol, figsize = (subrow*8, subcol*8))
         current = 0
         for subaxes in axes:
             for axis in subaxes:
