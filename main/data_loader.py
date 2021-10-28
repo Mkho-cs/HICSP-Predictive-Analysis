@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 from math import ceil
 import seaborn as sns
 
+sns.color_palette("viridis", as_cmap=True)
+
 class DataLoader:
     def __init__(self, url: str) -> None:
         requested = requests.get(url).content
@@ -45,7 +47,11 @@ class DataLoader:
         plt.figure(figsize=(15, 10))
         mask = np.zeros_like(self.data.corr())
         mask[np.triu_indices_from(mask)] = True
-        sns.heatmap(self.data.corr(), annot=True, mask=mask)
+        sns.heatmap(self.data.corr(), annot=True, mask=mask, cmap="viridis", linewidths=0.2, linecolor='black')
+    
+    def map_column(self, colname: str, ref: dict )->None:
+        self.data[colname] = self.data[colname].replace(ref)
+
         
     def drop_column(self, cols: list)->DataFrame:
         return self.data.drop(cols, inplace = True, axis = 1)
