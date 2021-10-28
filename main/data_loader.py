@@ -1,9 +1,11 @@
 import pandas as pd
 from pandas.core.frame import DataFrame
+import numpy as np
 import requests
 import io
 import matplotlib.pyplot as plt
 from math import ceil
+import seaborn as sns
 
 class DataLoader:
     def __init__(self, url: str) -> None:
@@ -39,6 +41,12 @@ class DataLoader:
                 if current == len(data): return
         plt.tight_layout()
 
+    def corr_heatmap(self)->None:
+        plt.figure(figsize=(15, 10))
+        mask = np.zeros_like(self.data.corr())
+        mask[np.triu_indices_from(mask)] = True
+        sns.heatmap(self.data.corr(), annot=True, mask=mask)
+        
     def drop_column(self, cols: list)->DataFrame:
         return self.data.drop(cols, inplace = True, axis = 1)
     

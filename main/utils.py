@@ -1,7 +1,8 @@
 from sklearn.preprocessing import OrdinalEncoder, MinMaxScaler
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score,roc_curve, f1_score, confusion_matrix
+import matplotlib.pyplot as plt
 
 """
 Data preprocessing
@@ -24,6 +25,32 @@ def create_minmax_scaler():
 Predictive modelling
 """
 
-def train_val_score(model, train: dict, val: dict, output=roc_auc_score, fit=True)->tuple:
-    if fit: model.fit(train['x'], train['y'])
+def evaluate_roc_auc(model, train: dict, val: dict, fit=False):
+    if fit: model.fit(train[0], train[1])
+
+    #y_train_pred = model.predict(train[0])
+    y_train_proba = model.predict_proba(train[0])[:, 1]
+
+    #y_val_pred = model.predict(val[0])
+    y_val_proba = model.predict_proba(val[0])[:, 1]
+
+    train_auc_roc = roc_auc_score(train[1], y_train_proba)
+    val_auc_roc = roc_auc_score(val[1], y_val_proba)
+
+    return train_auc_roc, val_auc_roc
+
+def plot_roc(model, val:dict, title="Classifier"):
+    y_proba = model.predict_proba(val[0])[:, 1]
+    fpr, tpr, _ = roc_curve(val[1], y_proba)
+    plt.plot(fpr, tpr)
+    plt.plot((0, 1), ls='dashed', color='red')
+
+    plt.title(title)
+    plt.xlabel("FPR")
+    plt.ylabel("TPR (Recall)")
+    plt.show()
+
+
+
+    
 
